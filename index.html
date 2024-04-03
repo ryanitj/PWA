@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <input id="speakInput" type="text" onchange="myFunction()">
+    <button id="speakButton">Falar</button>
+
+    <script>
+        window.onload = e => {
+            let speakText = localStorage.getItem("speakText")
+            document.getElementById("speakInput").value = speakText;
+        }
+    </script>
+
+    <script>
+        function myFunction() {
+            var inputValor = document.getElementById("speakInput").value;
+            localStorage.setItem("speakText", inputValor)
+        }
+    </script>
+
+    <script>
+         document.getElementById("speakButton").addEventListener('click', () => {
+            console.log('entrou')
+            document.querySelector("#speakInput")
+            var msg = document.getElementById("speakInput").value
+            const utterance = new SpeechSynthesisUtterance(msg);
+            speechSynthesis.speak(utterance);
+        })
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+        }
+    </script>
+</body>
+</html>

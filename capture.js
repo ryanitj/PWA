@@ -1,0 +1,1 @@
+document.startViewTransition(() => updateDOM());
