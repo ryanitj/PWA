@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,16 +11,109 @@
     <link rel="manifest" href="manifest.json">
 
 </head>
+
 <body>
-    <input id="speakInput" type="text" onchange="myFunction()">
-    <button id="speakButton">Falar</button>
+
+    <template id="speak-input-template">
+        <style>
+            /* Estilos podem ser personalizados conforme necessário */
+            #container {
+                display: flex;
+                align-items: center;
+            }
+
+            #speakInput {
+                margin-right: 10px;
+                padding: 10px 20px;
+                font-size: 18px;
+            }
+
+
+            #speakButton {
+                background-color: black;
+                padding: 10px 20px;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: bold;
+                color: white;
+            }
+
+            @media screen and (max-width: 768px) {
+                #container {
+                    flex-direction: column;
+                }
+
+
+                #speakInput {
+                    margin-bottom: 10px;
+
+                }
+            }
+        </style>
+        <div id="container">
+            <input id="speakInput" type="text">
+            <button id="speakButton">Falar</button>
+        </div>
+    </template>
 
     <script>
-        window.onload = e => {
-            let speakText = localStorage.getItem("speakText")
-            document.getElementById("speakInput").value = speakText;
+        class SpeakInput extends HTMLElement {
+            constructor() {
+                super();
+
+                const template = document.getElementById('speak-input-template');
+                const templateContent = template.content;
+
+                // Adicionar o conteúdo do template ao componente
+                const shadowRoot = this.attachShadow({ mode: 'open' });
+                shadowRoot.appendChild(templateContent.cloneNode(true));
+
+                // Selecione os elementos dentro do componente
+                this.input = shadowRoot.getElementById('speakInput');
+                this.button = shadowRoot.getElementById('speakButton');
+
+                // Adicionar evento de clique ao botão
+                this.button.addEventListener('click', () => {
+                    this.speak();
+                });
+                // Adicionar evento de clique ao botão
+                this.input.addEventListener('change', () => {
+                    this.onchange();
+                });
+
+                window.addEventListener('load', () => {
+                    let speakText = localStorage.getItem("speakText");
+                    this.input.value = speakText;
+                });
+            }
+
+            // Função para falar o texto do input
+            speak() {
+                const text = this.input.value;
+                var msg = this.input.value
+                const utterance = new SpeechSynthesisUtterance(msg);
+                speechSynthesis.speak(utterance);
+
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/service-worker.js')
+                }
+            }
+
+            onchange() {
+                var inputValor = this.input.value;
+                localStorage.setItem("speakText", inputValor)
+            }
         }
+
+        customElements.define('speak-input', SpeakInput);
     </script>
+
+
+
+    <speak-input></speak-input>
+
+    <!-- <input id="speakInput" type="text" onchange="myFunction()">
+    <button id="speakButton">Falar</button> -->
 
     <script>
         function myFunction() {
@@ -29,16 +123,10 @@
     </script>
 
     <script>
-         document.getElementById("speakButton").addEventListener('click', () => {
-            console.log('entrou')
-            document.querySelector("#speakInput")
-            var msg = document.getElementById("speakInput").value
-            const utterance = new SpeechSynthesisUtterance(msg);
-            speechSynthesis.speak(utterance);
-        })
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js')
         }
     </script>
 </body>
+
 </html>
